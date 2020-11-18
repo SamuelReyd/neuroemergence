@@ -1,12 +1,11 @@
 import numpy as np
-import random as rd
 
 from Constants import *
 
 class Ball:
     def __init__(self) :
         self.pos = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2]) #Ce sont des entiers
-        teta = 2*np.pi*rd.random()
+        teta = np.random.uniform(np.pi/4, 3*np.pi/4)
         self.speedNorm = 5
         self.speedDir = np.array([np.cos(teta), - np.sin(teta)]) # - cf convention axe
         self.rightAlpha = np.pi/5 #angle extremaux quand rebond sur planche
