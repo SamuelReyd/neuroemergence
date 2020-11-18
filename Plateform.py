@@ -1,14 +1,13 @@
-import numpy as np
-
 class Plateform:
     
     length = 30
     width = 2
     limit_speed = 5
+    color = (0,0,255)
     
     def __init__(self):
         self.speed = 0
-        self.x = 0
+        self.pos = 0
         
     def update(self):
         self.pos += self.speed
