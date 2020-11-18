@@ -1,3 +1,5 @@
+from Constants import *
+
 class Plateform:
     
     length = 30
@@ -11,11 +13,11 @@ class Plateform:
         
     def update(self):
         self.pos += self.speed
-        self.pos = min(self.pos, WINDOW_WIDTH)
+        self.pos = min(self.pos, WINDOW_WIDTH - self.length)
         self.pos = max(self.pos, 0)
     
-    def action_performed(dir: int):
-        speed += dir
+    def action_performed(self, dir: int):
+        self.speed += dir
         self.speed = min(self.speed, self.limit_speed)
         self.speed = max(self.speed, -self.limit_speed)
         

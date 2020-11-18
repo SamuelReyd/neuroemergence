@@ -5,13 +5,17 @@ from Plateform import Plateform
 from Constants import *
 from Rendering import render
 
+pygame.display.init()
 run = True
 
 plateform = Plateform()
 ball = Ball()
-window = pygame.display.get_init((WINDOW_WIDTH, WINDOW_HEIGHT))
+window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+
+clock = pygame.time.Clock()
 
 while run:
+    clock.tick(30)
     render(window, ball, plateform)
     
     for event in pygame.event.get():
@@ -23,4 +27,7 @@ while run:
                 plateform.action_performed(-1)
             elif event.key == K_RIGHT:
                 plateform.action_performed(1)
+    
+    plateform.update()
+    ball.update(plateform)
                 
