@@ -11,6 +11,7 @@ class Ball:
         self.rightAlpha = np.pi/5 #angle extremaux quand rebond sur planche
         self.leftAlpha = np.pi - self.rightAlpha
         self.alive = True
+        self.color = [255, 0, 0]
     
     def bounce(self, plateform) : #update le speed en fonction si touche un mur
         if (self.pos[1] <= 0 or self.pos[1] >= WINDOW_WIDTH) : #Collisition sur le mur de gauche, on change compo horizontale de la vitesse OU #Collisition sur le mur de droite , on change compo horizontale de la vitesse
