@@ -3,6 +3,7 @@ import numpy as np
 class Plateform:
     
     length = 30
+    width = 2
     limit_speed = 5
     
     def __init__(self):
@@ -19,4 +20,4 @@ class Plateform:
         self.speed = min(self.speed, self.limit_speed)
         self.speed = max(self.speed, -self.limit_speed)
         
-    def 
+    
