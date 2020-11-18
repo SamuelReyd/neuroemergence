@@ -8,8 +8,7 @@ class Ball:
         self.pos = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2]) #Ce sont des entiers
         teta = 2*np.pi*rd.random()
         self.speedNorm = 5
-        #self.speedDir = np.array([np.cos(teta), - np.sin(teta)]) # - cf convention axe
-        self.speedDir = np.array([0, -1])
+        self.speedDir = np.array([np.cos(teta), - np.sin(teta)]) # - cf convention axe
         self.rightAlpha = np.pi/5 #angle extremaux quand rebond sur planche
         self.leftAlpha = np.pi - self.rightAlpha
         self.alive = True
