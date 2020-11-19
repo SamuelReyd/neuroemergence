@@ -5,7 +5,7 @@ from Constants import *
 class Ball:
     def __init__(self, teta) :
         self.pos = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2]) #Ce sont des entiers
-        self.speedNorm = 5
+        self.speedNorm = 1
         self.speedDir = np.array([np.cos(teta), - np.sin(teta)]) # - cf convention axe
         self.rightAlpha = np.pi/5 #angle extremaux quand rebond sur planche
         self.leftAlpha = np.pi - self.rightAlpha
@@ -35,9 +35,12 @@ class Ball:
                     self.pos[1] = WINDOW_HEIGHT
                 else :
                     self.alive = False
-                    self.score = BOUNCE_BONUS*self.bounceNb + DEATH_DISTANCE_BONUS*(1 - abs(self.pos[0] - (plateform.pos + plateform.length/2))/WINDOW_WIDTH)
+                    self.calculeScore(plateform)
     
     def update(self, plateform) :
         self.bounce(plateform) #Update speedDir et teste la mort
         if self.alive :
             self.pos = self.pos + self.speedNorm*self.speedDir
+    
+    def calculeScore(self, plateform) :
+        self.score = BOUNCE_BONUS*self.bounceNb + DEATH_DISTANCE_BONUS*(1 - abs(self.pos[0] - (plateform.pos + plateform.length/2))/WINDOW_WIDTH)

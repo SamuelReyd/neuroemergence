@@ -2,13 +2,13 @@ from Constants import *
 
 class Plateform:
     
-    length = 30
+    length = 60
     width = 2
     limit_speed = 5
     color = (0,0,255)
     
     def __init__(self):
-        self.speed = 0
+        self.speed = 10
         self.pos = WINDOW_WIDTH/2
         self.score = 0 #compte quand colle bord
         
@@ -25,6 +25,6 @@ class Plateform:
         #self.speed += dir
         #self.speed = min(self.speed, self.limit_speed)
         #self.speed = max(self.speed, -self.limit_speed)
-        self.pos += dir
+        self.pos += self.speed*dir
         
     
