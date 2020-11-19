@@ -35,7 +35,7 @@ averageScores = list()
 
 clock = pygame.time.Clock()
 while run:
-    #clock.tick(60)
+    clock.tick(120)
     render(window, balls, plateforms)
     
     for event in pygame.event.get():
@@ -48,7 +48,7 @@ while run:
         #     elif event.key == K_RIGHT:
         #         plateform.action_performed(1)
                 
-    if (time.time() - t0 > 2) :
+    if (time.time() - t0 > 20) :
         for i in range(popSize):
             balls[i].calculeScore(plateforms[i])
             balls[i].alive = False
@@ -89,7 +89,7 @@ while run:
             print("Moyenne rebond : ", sum([balls[i].bounceNb for i in range(len(scores))])/len(scores))
         generation = generation + 1
         teta = np.random.uniform(np.pi/4, 3*np.pi/4)
-        balls = [Ball(np.random.uniform(teta)) for _ in range(popSize)]
+        balls = [Ball(teta) for _ in range(popSize)]
         plateforms = [Plateform() for _ in range(popSize)]
         bestScores.append(max(scores))
         averageScores.append(sum(scores)/len(scores))
