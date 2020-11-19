@@ -35,7 +35,7 @@ averageScores = list()
 
 clock = pygame.time.Clock()
 while run:
-    clock.tick(120)
+    #clock.tick(120)
     render(window, balls, plateforms)
     
     for event in pygame.event.get():
@@ -48,7 +48,7 @@ while run:
         #     elif event.key == K_RIGHT:
         #         plateform.action_performed(1)
                 
-    if (time.time() - t0 > 20) :
+    if (time.time() - t0 > 10) :
         for i in range(popSize):
             balls[i].calculeScore(plateforms[i])
             balls[i].alive = False
