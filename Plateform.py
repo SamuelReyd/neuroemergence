@@ -14,7 +14,6 @@ class Plateform:
         
     def update(self):
         #self.pos += self.speed
-        print('Update pos')
         if (self.pos + self.length >= WINDOW_WIDTH) :
             self.pos = WINDOW_WIDTH - self.length
             self.score += 1
@@ -26,7 +25,6 @@ class Plateform:
         #self.speed += dir
         #self.speed = min(self.speed, self.limit_speed)
         #self.speed = max(self.speed, -self.limit_speed)
-        print('Update pos')
         self.pos += dir
         
     

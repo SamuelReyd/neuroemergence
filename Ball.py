@@ -3,9 +3,8 @@ import numpy as np
 from Constants import *
 
 class Ball:
-    def __init__(self) :
+    def __init__(self, teta) :
         self.pos = np.array([WINDOW_WIDTH/2, WINDOW_HEIGHT/2]) #Ce sont des entiers
-        teta = np.random.uniform(np.pi/4, 3*np.pi/4)
         self.speedNorm = 5
         self.speedDir = np.array([np.cos(teta), - np.sin(teta)]) # - cf convention axe
         self.rightAlpha = np.pi/5 #angle extremaux quand rebond sur planche
@@ -14,6 +13,7 @@ class Ball:
         self.color = [255, 0, 0]
         self.radius = 5
         self.score = 0
+        self.bounceNb = 0
     
     def bounce(self, plateform) : #update le speedDir en fonction si touche un mur
         if self.alive :
@@ -28,13 +28,14 @@ class Ball:
                 self.pos[1] = 0
             elif (self.pos[1] >= WINDOW_HEIGHT) : #Rebondi sur la planchette ?
                 if (plateform.pos <= self.pos[0] <= plateform.pos + plateform.length) :
-                    self.score = self.score + 1
+                    self.bounceNb = self.bounceNb + 1
                     xOnPlateform = self.pos[0] - plateform.pos
                     teta = (self.rightAlpha - self.leftAlpha)/plateform.length * xOnPlateform + self.leftAlpha
                     self.speedDir = np.array([np.cos(teta), - np.sin(teta)])
                     self.pos[1] = WINDOW_HEIGHT
                 else :
                     self.alive = False
+                    self.score = BOUNCE_BONUS*self.bounceNb + DEATH_DISTANCE_BONUS*(1 - abs(self.pos[0] - (plateform.pos + plateform.length/2))/WINDOW_WIDTH)
     
     def update(self, plateform) :
         self.bounce(plateform) #Update speedDir et teste la mort

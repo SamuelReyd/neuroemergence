@@ -16,7 +16,7 @@ class GeneticAlgorithm :
         for layer1, layer2 in zip(neuralNetwork1.layers, neuralNetwork2.layers) :
             flatLayer1 = np.reshape(layer1, -1)
             flatLayer2 = np.reshape(layer2, -1)
-            crossoverPoints = sorted(np.random.choice(np.arange(len(flatLayer1)), self.crossoverNb))
+            crossoverPoints = sorted(np.random.choice(np.arange(len(flatLayer1)), self.crossoverNb, replace = False))
             crossoverPoints = [0] + crossoverPoints
             crossoverPoints.append(len(flatLayer1))
             newFlatLayer = []
@@ -30,12 +30,15 @@ class GeneticAlgorithm :
         return NeuralNetwork(newLayers)
 
     def mutation(self, flatLayer) :
-        for pos in np.random.choice([i for i in range(len(flatLayer))], int(self.mutationRate*len(flatLayer))) :
-            flatLayer[pos] = flatLayer[pos] + self.mutationScale*np.random.uniform(-1, 1)
+        for pos in range(len(flatLayer)) :
+            if (np.random.rand() < self.mutationRate) :
+                #flatLayer[pos] = flatLayer[pos] + self.mutationScale*np.random.uniform(-1, 1)
+                flatLayer[pos] = np.random.uniform(-1, 1)
+            
     
     def update(self, scores) :
         newPop = []
         for i in range(self.popSize) :
-            parent1, parent2 = np.random.choice(self.population, 2, p = scores/np.sum(scores))
+            parent1, parent2 = np.random.choice(self.population, 2, p = scores/np.sum(scores), replace = False)
             newPop.append(self.crossover(parent1, parent2))
         self.population = newPop

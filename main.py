@@ -12,19 +12,21 @@ import numpy as np
 pygame.display.init()
 run = True
 
-popSize = 1000
+popSize = 100
 mutationRate = 0.05
-crossoverNb = 2
-mutationScale = 1
+crossoverNb = 1
+mutationScale = 0.25
 
 
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-population = GeneticAlgorithm((6,8,1), popSize, mutationRate, crossoverNb, mutationScale)
-balls = [Ball() for _ in range(popSize)]
+population = GeneticAlgorithm((5,7,1), popSize, mutationRate, crossoverNb, mutationScale)
+teta = np.random.uniform(np.pi/4, 3*np.pi/4)
+balls = [Ball(teta) for _ in range(popSize)]
 plateforms = [Plateform() for _ in range(popSize)]
 scores = np.zeros(popSize)
 t0 = time.time()
 
+generation = 0
 bestScores = list()
 averageScores = list()
 
@@ -52,7 +54,7 @@ while run:
             balls[i].alive = False
     for i in range(popSize):
         if not balls[i].alive:
-            scores[i] = balls[i].score - 1/1000 * plateforms[i].score
+            scores[i] = balls[i].score - WALL_PENALITY * plateforms[i].score
         else:
             still_any = True
             
@@ -61,8 +63,8 @@ while run:
             balls[i].speedDir[1], 
             balls[i].pos[0]/WINDOW_WIDTH, 
             balls[i].pos[1]/WINDOW_HEIGHT,
-            plateforms[i].pos/WINDOW_WIDTH,
-            plateforms[i].speed/Plateform.limit_speed]
+            plateforms[i].pos/WINDOW_WIDTH]
+            #plateforms[i].speed/Plateform.limit_speed]
             
             output = population.population[i].feed_forward(input)
             if output < 0.4:
@@ -75,13 +77,21 @@ while run:
         #scores = 100/(np.amax(scores) - np.amin(scores)) * (scores - np.amin(scores))
         scores[scores <= 0] = 0
         population.update(scores + 0.01) #Pour eviter d'avoir tous les scores à 0 et diviser par 0
-        balls = [Ball() for _ in range(popSize)]
-        platforms = [Plateform() for _ in range(popSize)]
-        print(plateforms[0].pos)
+        if (generation % 5 == 0) : #Affiche de la meilleur matrice
+            for i in range(len(population.population[0].layers)) :
+                print("--- Generation : ", generation, " ---")
+                print(population.population[np.argmax(scores)].layers[i])
+                print("Nb rebond du score max : ", balls[np.argmax(scores)].bounceNb)
+                print("Moyenne rebond : ", sum([balls[i].bounceNb for i in range(len(scores))])/len(scores))
+        generation = generation + 1
+        teta = np.random.uniform(np.pi/4, 3*np.pi/4)
+        balls = [Ball(teta) for _ in range(popSize)]
+        plateforms = [Plateform() for _ in range(popSize)]
         bestScores.append(max(scores))
         averageScores.append(sum(scores)/len(scores))
         scores = np.zeros(popSize)
         t0 = time.time()
+
 
 plt.plot(range(len(bestScores)), bestScores)
 plt.plot(range(len(averageScores)), averageScores)
