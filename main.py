@@ -12,11 +12,14 @@ import numpy as np
 pygame.display.init()
 run = True
 
-popSize = 100
+popSize = 1000
+mutationRate = 0.05
+crossoverNb = 2
+mutationScale = 1
 
 
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-population = GeneticAlgorithm((6,8,1), popSize, 0.1, 2, 0.5)
+population = GeneticAlgorithm((6,8,1), popSize, mutationRate, crossoverNb, mutationScale)
 balls = [Ball() for _ in range(popSize)]
 plateforms = [Plateform() for _ in range(popSize)]
 scores = np.zeros(popSize)
@@ -30,7 +33,7 @@ averageScores = list()
 
 clock = pygame.time.Clock()
 while run:
-    clock.tick(30)
+    #clock.tick(30)
     render(window, balls, plateforms)
     
     for event in pygame.event.get():
@@ -44,9 +47,12 @@ while run:
         #         plateform.action_performed(1)
                 
     still_any = False
+    if (time.time() - t0 > 10) :
+        for i in range(popSize):
+            balls[i].alive = False
     for i in range(popSize):
         if not balls[i].alive:
-            scores[i] = time.time() - t0
+            scores[i] = balls[i].score - 1/1000 * plateforms[i].score
         else:
             still_any = True
             
@@ -66,9 +72,12 @@ while run:
             plateforms[i].update()
             balls[i].update(plateforms[i])
     if not still_any:
-        population.update(scores)
+        #scores = 100/(np.amax(scores) - np.amin(scores)) * (scores - np.amin(scores))
+        scores[scores <= 0] = 0
+        population.update(scores + 0.01) #Pour eviter d'avoir tous les scores à 0 et diviser par 0
         balls = [Ball() for _ in range(popSize)]
         platforms = [Plateform() for _ in range(popSize)]
+        print(plateforms[0].pos)
         bestScores.append(max(scores))
         averageScores.append(sum(scores)/len(scores))
         scores = np.zeros(popSize)
