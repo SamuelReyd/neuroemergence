@@ -1,4 +1,4 @@
-PATH_TO_CONFIG = "config/conf4/conf.txt"
+PATH_TO_CONFIG = "config/conf1/conf.txt"
 
 dic = eval(open(PATH_TO_CONFIG, "r").read())
 

@@ -11,7 +11,7 @@ import numpy as np
 import pickle
 import os
 
-SHOW_RENDER = False
+SHOW_RENDER = True
 SAVE_BEST_PLAYER = True
 SET_FPS = 500
 

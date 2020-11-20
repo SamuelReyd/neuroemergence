@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 
-PATH_TO_PLAYER = "config/conf3/result1/bestPlayer"
+PATH_TO_PLAYER = "config/conf1/result1/bestPlayer"
 
 
 
