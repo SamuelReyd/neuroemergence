@@ -8,51 +8,50 @@ from GeneticAlgorithm import GeneticAlgorithm
 import time
 import matplotlib.pyplot as plt
 import numpy as np
+import pickle
+import os
+
+SHOW_RENDER = False
+SAVE_BEST_PLAYER = True
+SET_FPS = 500
+
+
+
+
 
 pygame.display.init()
 run = True
 
-popSize = 100
-mutationRate = 0.05
-crossoverNb = 2
-mutationScale = 0.08
-
+popSize = POPULATION_SIZE
+mutationRate = MUTATION_RATE
+crossoverNb = CROSSOVER_NUMBER
+mutationScale = MUTATION_SCALE
 
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-population = GeneticAlgorithm((5,1), popSize, mutationRate, crossoverNb, mutationScale)
+population = GeneticAlgorithm(LAYERS_SIZES, popSize, mutationRate, crossoverNb, mutationScale)
 teta = np.random.uniform(np.pi/4, 3*np.pi/4)
 balls = [Ball(teta) for _ in range(popSize)]
 plateforms = [Plateform() for _ in range(popSize)]
 scores = np.zeros(popSize)
-t0 = time.time()
 
 generation = 0
 bestScores = list()
 averageScores = list()
-
-
-
+averageBounces = list()
+maxBounces = list()
+bestPlayer = None
+bestPlayerBounces = 0
 
 clock = pygame.time.Clock()
 while run:
-    #clock.tick(120)
-    render(window, balls, plateforms)
+    if (SHOW_RENDER) :
+        clock.tick(SET_FPS)
+        render(window, balls, plateforms)
     
     for event in pygame.event.get():
         if event.type == QUIT:
             run = False
-            
-        # if event.type == KEYDOWN:
-        #     if event.key == K_LEFT:
-        #         plateform.action_performed(-1)
-        #     elif event.key == K_RIGHT:
-        #         plateform.action_performed(1)
                 
-    if (time.time() - t0 > 10) :
-        for i in range(popSize):
-            balls[i].calculeScore(plateforms[i])
-            balls[i].alive = False
-
     still_any = False
     for i in range(popSize):
         if balls[i].alive:
@@ -75,31 +74,59 @@ while run:
             plateforms[i].update()
             balls[i].update(plateforms[i])
 
+            if balls[i].bounceNb > 20 : #On cappe le nombre de jongle max
+                balls[i].calculeScore(plateforms[i])
+                balls[i].alive = False
+
     if not still_any:
-        scores[i] += balls[i].score - WALL_PENALITY * plateforms[i].score
+        for i in range(popSize) :
+            scores[i] += balls[i].score - WALL_PENALITY * plateforms[i].score
+        
+        #Update bestPlayer :
+        for i in range(popSize) :
+            if balls[i].bounceNb > bestPlayerBounces :
+                bestPlayer = population.population[i]
+                bestPlayerBounces = balls[i].bounceNb
+        
         #scores = 100/(np.amax(scores) - np.amin(scores)) * (scores - np.amin(scores))
-        scores[scores <= 0] = 0
-        population.update(scores + 0.01) #Pour eviter d'avoir tous les scores à 0 et diviser par 0
+        #scores[scores <= 0] = 0
+        #population.update(scores + 0.01) #Pour eviter d'avoir tous les scores à 0 et diviser par 0
+        population.update(100/(np.amax(scores) - np.amin(scores)) * (scores - np.amin(scores)) + 0.01)
+
+        meanBounce = sum([balls[i].bounceNb for i in range(len(scores))])/len(scores)
+        maxBounce = max([balls[i].bounceNb for i in range(len(scores))])
         if (generation % 5 == 0) : #Affiche de la meilleur matrice
             print("--- Generation : ", generation, " ---")
             for i in range(len(population.population[0].layers)) :
                 print(population.population[np.argmax(scores)].layers[i])
             print("Nb rebond du score max : ", balls[np.argmax(scores)].bounceNb)
-            print("Nb rebond max : ", max([balls[i].bounceNb for i in range(len(scores))]))
-            print("Moyenne rebond : ", sum([balls[i].bounceNb for i in range(len(scores))])/len(scores))
+            print("Nb rebond max : ", maxBounce)
+            print("Moyenne rebond : ", meanBounce)
+            print("Record : ", bestPlayerBounces)
+        averageBounces.append(meanBounce)
+        maxBounces.append(maxBounce)
+        bestScores.append(max(scores))
+        averageScores.append(sum(scores)/len(scores))
+
         generation = generation + 1
         teta = np.random.uniform(np.pi/4, 3*np.pi/4)
         balls = [Ball(teta) for _ in range(popSize)]
         plateforms = [Plateform() for _ in range(popSize)]
-        bestScores.append(max(scores))
-        averageScores.append(sum(scores)/len(scores))
         scores = np.zeros(popSize)
-        t0 = time.time()
 
+pathToFolder = PATH_TO_CONFIG[:-9]
+resultNb = len(os.listdir(pathToFolder))
+newFolderResult = pathToFolder + "/result" + str(resultNb)
+os.mkdir(newFolderResult)
 
-plt.plot(range(len(bestScores)), bestScores)
-plt.plot(range(len(averageScores)), averageScores)
+if SAVE_BEST_PLAYER :
+    pickle.dump(bestPlayer, open(newFolderResult + "/bestPlayer", "wb"))
+
+plt.plot(range(len(bestScores)), bestScores, label = "Best Scores")
+plt.plot(range(len(averageScores)), averageScores, label = "Average Scores")
+plt.plot(range(len(averageBounces)), averageBounces, label = "Average Bounces")
+plt.plot(range(len(maxBounces)), maxBounces, label = "Max Bounces")
+plt.legend()
+plt.title('Results')
+plt.savefig(newFolderResult + "/figure.png")
 plt.show()
-    
-    
-                

@@ -34,8 +34,10 @@ class GeneticAlgorithm :
     def mutation(self, flatLayer) :
         for pos in range(len(flatLayer)) :
             if (np.random.rand() < self.mutationRate) :
-                flatLayer[pos] = flatLayer[pos] + self.mutationScale*np.random.uniform(-1, 1)
-                #flatLayer[pos] = np.random.uniform(-1, 1)
+                if (MUTATION_SCALE >= 0) :
+                    flatLayer[pos] = flatLayer[pos] + self.mutationScale*np.random.uniform(-1, 1)
+                else :
+                    flatLayer[pos] = np.random.uniform(-1, 1)
             
     
     def update(self, scores) :
@@ -43,7 +45,7 @@ class GeneticAlgorithm :
         # for i in range(self.popSize) :
         #     parent1, parent2 = np.random.choice(self.population, 2, p = scores/np.sum(scores), replace = False)
         #     newPop.append(self.crossover(parent1, parent2))
-        possibleParents = sorted(self.population, key=lambda x: scores[self.population.index(x)])[:NB_OF_CHOSEN]
+        possibleParents = sorted(self.population, key=lambda x: scores[self.population.index(x)])[-NB_OF_CHOSEN:]
         newPop.extend(possibleParents)
         for _ in range(NB_OF_CHOSEN, self.popSize):
             father, mother = np.random.choice(possibleParents, 2)
